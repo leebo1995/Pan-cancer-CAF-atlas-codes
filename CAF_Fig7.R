@@ -184,7 +184,6 @@ markers = FindAllMarkers(mouse_CAF1, min.pct = 0.25, only.pos = TRUE, logfc.thre
 
 
 ###提取CAF
-mouse_CAF <- subset (combined,  ident = c("Fibroblast"))
 mouse_CAF1 <- subset (combined,  ident = c("24"))
 
 mouse_CAF1 = NormalizeData(mouse_CAF1)
@@ -208,28 +207,6 @@ mouse_CAF1[["percent.mt"]] <- PercentageFeatureSet(mouse_CAF1, pattern = "^mt-")
 VlnPlot(mouse_CAF1, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
 
 mouse_CAF1 <- subset(mouse_CAF1, subset = nFeature_RNA < 5000 & percent.mt < 10)
-
-
-mouse_CAF = NormalizeData(mouse_CAF)
-mouse_CAF = FindVariableFeatures(mouse_CAF)
-mouse_CAF = ScaleData(mouse_CAF)
-mouse_CAF = RunPCA(mouse_CAF)
-mouse_CAF <- RunHarmony(mouse_CAF, group.by.vars = 'orig.ident',assay.use = 'RNA', max.iter = 20)
-mouse_CAF = FindNeighbors(mouse_CAF, dims = 1:30, reduction = "harmony")
-mouse_CAF = FindClusters(mouse_CAF, resolution = c(0.1,0.3,0.4,0.6,0.8,1.2))
-mouse_CAF = RunUMAP(mouse_CAF, reduction = "harmony", dims = 1:30, return.model = T)
-DimPlot(mouse_CAF, reduction='umap', label = TRUE, group.by = 'RNA_snn_res.1.2')
-
-mouse_CAF <- JoinLayers(mouse_CAF)
-Idents(mouse_CAF) = "RNA_snn_res.1.2"
-markers = FindAllMarkers(mouse_CAF, min.pct = 0.25, only.pos = TRUE, logfc.threshold = 0.7)
-
-write.csv(markers,file = '~/LB/data/mouse/marker/markers_mouse_CAF_1.21.csv')
-
-mouse_CAF <- RenameIdents(mouse_CAF, `0`='lsCAF',`1`='Tem_iCAF/apCAF',`2`='Mac2_iCAF/Gran_iCAF',`3`='vCAF',`4`='iCAF',`5`='dCAF',`6`='myCAF',`7`='vCAF',`8`='dCAF')
-mouse_CAF@meta.data$group<-factor(mouse_CAF@meta.data$group, levels = c("Control","Oxamate","anti_PD1","Oxamate_anti_PD1"))
-mouse_CAF@meta.data$rename<-factor(mouse_CAF@meta.data$rename, levels = c("Mac2_iCAF/Gran_iCAF","Tem_iCAF/apCAF",'iCAF',"myCAF","dCAF","vCAF","lsCAF"))
-
 
 mouse_CAF1 <- RenameIdents(mouse_CAF1, `0`='lsCAF',`1`='Tem_iCAF/apCAF',`2`='NF/Mono_iCAF',`3`='Mac2_iCAF/Gran_iCAF',`4`='Mac2_iCAF/Gran_iCAF',`5`='dCAF',`6`='myCAF',`7`='vCAF',`8`='dCAF')
 mouse_CAF1@meta.data$rename <- Idents(mouse_CAF1)
